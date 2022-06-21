@@ -13,6 +13,7 @@ function Nav() {
                             <li><Link to="/" className="active">Inicio</Link></li>
                             <li><Link to="/tours">Tours</Link></li>
                             <li><Link to="/destinos">Destinos</Link></li>
+                            <li><Link to="/destinos-lista">Lista Destinos</Link></li>
                         </ul>
                     </div>
                     <div className="bottom">

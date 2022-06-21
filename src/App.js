@@ -5,6 +5,7 @@ import Home from "./home/Home";
 import Footer from "./common/Footer";
 import Tours from "./components/tours/Tours";
 import Destinos from "./components/destinos/Destinos";
+import DestinosTabla from "./components/destinos/DestinosTabla";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/" element={<Home/>}/>
                     <Route path="/tours" element={<Tours/>}/>
                     <Route path="/destinos" element={<Destinos/>}/>
+                    <Route path="/destinos-lista" element={<DestinosTabla/>}/>
                 </Routes>
                 <Footer/>
 
