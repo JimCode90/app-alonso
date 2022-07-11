@@ -1,0 +1,23 @@
+.btn-editar-destino{
+    padding: .5rem;
+    background-color: #d46a00;
+    color: white;
+    width: 100%;
+    border-radius: 10%;
+}
+
+.btn-eliminar-destino{
+    padding: .5rem;
+    background-color: #a90707;
+    color: white;
+    width: 100%;
+    border-radius: 10%;
+}
+
+.btn-agregar-destino{
+    padding: .5rem;
+    background-color: #009A70;
+    color: white;
+    width: 100%;
+    border-radius: 10%;
+}
