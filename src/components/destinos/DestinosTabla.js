@@ -1,4 +1,5 @@
 import imgHeader1 from "../../assets/img/header1.jpg";
+import {API} from '../../utils/index'
 import './DestinosTabla.css'
 import {useEffect, useState} from "react";
 import {Box, Button, Modal} from "@mui/material";
@@ -19,9 +20,12 @@ const estilosModal = {
 
 function DestinosTabla() {
     const [destinos, setDestinos] = useState([]);
+    const [idDestino, setIdDestino] = useState('');
     const [paisDestino, setPaisDestino] = useState('');
     const [descripcionDestino, setDescripcionDestino] = useState('');
     const [modalRegistro, setModalRegistro] = useState(false);
+    const [modalActualizar, setModalActualizar] = useState(false);
+    const [modalEliminar, setModalEliminar] = useState(false);
 
     useEffect(() => {
         getDestinos()
@@ -41,7 +45,7 @@ function DestinosTabla() {
     const registrarDestinos = (event) => {
         event.preventDefault();
         cerrarModalRegistro()
-        let ruta = `http://api-alonso.test/api/destinos`
+        let ruta = `${API}/api/destinos`
         const formData = new FormData()
         formData.append('pais', paisDestino)
         formData.append('descripcion', descripcionDestino)
@@ -51,11 +55,57 @@ function DestinosTabla() {
         }).then(response => {
             return response.json();
         }).then(data => {
+            limpiarCampos()
             getDestinos()
-            alert("Se ha registrado los destinos " + nombre + " de manera correcta.")
-
+            alert("Se ha registrado el destino " + paisDestino + " de manera correcta.")
         })
 
+    }
+
+    const actualizarDestinos = (event) => {
+        event.preventDefault();
+        cerrarModalActualizar()
+        let ruta = `${API}/api/destinos-actualizar`
+        const formData = new FormData()
+        formData.append('id', idDestino)
+        formData.append('pais', paisDestino)
+        formData.append('descripcion', descripcionDestino)
+        fetch(ruta, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            limpiarCampos()
+            getDestinos()
+            alert("Se ha editado el destino " + paisDestino + " de manera correcta.")
+        })
+
+    }
+
+    const eliminarDestinos = (event) => {
+        event.preventDefault();
+        cerrarModalEliminar()
+        let ruta = `${API}/api/destinos-eliminar`
+        const formData = new FormData()
+        formData.append('id', idDestino)
+        fetch(ruta, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            limpiarCampos()
+            getDestinos()
+            alert("Se ha eliminado el destino " + paisDestino + " de manera correcta.")
+        })
+
+    }
+
+    const limpiarCampos = () => {
+        setIdDestino('')
+        setPaisDestino('')
+        setDescripcionDestino('')
     }
 
     const abrirModelRegistro = () => {
@@ -66,11 +116,33 @@ function DestinosTabla() {
         setModalRegistro(false)
     }
 
+    const abrirModalActualizar = (item) => {
+        setIdDestino(item.id)
+        setPaisDestino(item.pais)
+        setDescripcionDestino(item.descripcion)
+        setModalActualizar(true)
+    }
+
+    const cerrarModalActualizar = () => {
+        setModalActualizar(false)
+    }
+
+    const abrirModalEliminar = (item) => {
+        setIdDestino(item.id)
+        setPaisDestino(item.pais)
+        setModalEliminar(true)
+    }
+
+    const cerrarModalEliminar = () => {
+        setModalEliminar(false)
+    }
+
     const formularioTemplate = () => {
         return (
             <>
                 <div className="add_comment">
                     <div className="_title">Complete los siguientes campos:</div>
+                    <input type="hidden" value={idDestino}/>
                     <div className="field">
                         <label htmlFor="pais" className="label">Pais</label>
                         <div className="input_wrap">
@@ -96,7 +168,6 @@ function DestinosTabla() {
 
                     <div className="comment-fotm-bottom">
                         <button className="btn submit">Enviar</button>
-                        <Button onClick={cerrarModalRegistro}>Cancelar</Button>
                     </div>
                 </div>
             </>
@@ -151,8 +222,8 @@ function DestinosTabla() {
                                                     <img src={destino.img_bandera} alt=""/>
                                                 </td>
                                                 <td>
-                                                    <button className="btn-editar-destino">Editar</button>
-                                                    <button className="btn-eliminar-destino">Eliminar</button>
+                                                    <button className="btn-editar-destino" onClick={(e) => abrirModalActualizar(destino)}>Editar</button>
+                                                    <button className="btn-eliminar-destino" onClick={(e) => abrirModalEliminar(destino)}>Eliminar</button>
                                                 </td>
                                             </tr>
                                         )
@@ -177,8 +248,62 @@ function DestinosTabla() {
                     <h2 id="child-modal-title">REGISTRAR DESTINO</h2>
                     <div id="child-modal-description">
                         <div className="reviews_comments">
-                            <form>
+                            <form onSubmit={(event) => registrarDestinos(event)}>
                                 {formularioTemplate()}
+                                <Button onClick={cerrarModalRegistro}>Cancelar</Button>
+                            </form>
+                        </div>
+                    </div>
+
+                </Box>
+            </Modal>
+
+            <Modal
+                hideBackdrop
+                open={modalActualizar}
+                onClose={cerrarModalRegistro}
+                aria-labelledby="child-modal-title"
+                aria-describedby="child-modal-description"
+            >
+                <Box sx={{...estilosModal, width: '50%'}}>
+                    <h2 id="child-modal-title">EDITAR DESTINO</h2>
+                    <div id="child-modal-description">
+                        <div className="reviews_comments">
+                            <form onSubmit={(event) => actualizarDestinos(event)}>
+                                {formularioTemplate()}
+                                <Button onClick={cerrarModalActualizar}>Cancelar</Button>
+                            </form>
+                        </div>
+                    </div>
+
+                </Box>
+            </Modal>
+
+            <Modal
+                hideBackdrop
+                open={modalEliminar}
+                onClose={cerrarModalEliminar}
+                aria-labelledby="child-modal-title"
+                aria-describedby="child-modal-description"
+            >
+                <Box sx={{...estilosModal, width: '50%'}}>
+                    <h2 id="child-modal-title" style={{
+                        textAlign: 'center',
+                        color: 'red',
+                        fontWeight: 'bold',
+                        fontSize: '20px'
+                    }}>ESTAS A PUNTO DE ELIMINAR EL DESTINO {paisDestino.toUpperCase()}</h2>
+                    <div id="child-modal-description">
+                        <div className="reviews_comments">
+                            <form onSubmit={(event) => eliminarDestinos(event)}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    marginTop: '.3em'
+                                }}>
+                                    <button className="btn submit">ELIMINAR</button>
+                                </div>
+                                <Button onClick={cerrarModalEliminar}>Cancelar</Button>
                             </form>
                         </div>
                     </div>

@@ -1,12 +1,16 @@
 import imgHeader1 from '../../assets/img/header1.jpg'
 import {useEffect, useState} from "react";
+import {API} from "../../utils";
 
 function Tours() {
 
     const [tours, setTours] = useState([]);
+    const [destinos, setDestinos] = useState([]);
+    const [filtroDestino, setFiltroDestino] = useState('');
 
     useEffect(() => {
         getTours()
+        getDestinos()
     }, []);
 
     const getTours = () => {
@@ -17,6 +21,17 @@ function Tours() {
             })
             .then(data => {
                 setTours(data)
+            })
+    }
+
+    const getDestinos = () => {
+        let url = `${API}/api/destinos`
+        fetch(url)
+            .then(resp => {
+                return resp.json()
+            })
+            .then(data => {
+                setDestinos(data)
             })
     }
 
@@ -31,17 +46,53 @@ function Tours() {
                     </div>
                 </div>
             </div>
-            <div className="image_bg" style={{
+            <div className="page_head" style={{
                 background: `url(${imgHeader1})`
-            }}></div>
-            <div className="page_content two-columns">
+            }}>
                 <div className="wrap">
                     <div className="wrap_float">
-                        <div className="section-title">Tours</div>
+                        <div className="title">Buscar Tours</div>
+                        <div className="search_tour">
+                            <div className="search_tour_form">
+                                <div className="fields__block" style={{
+                                    padding: '0'
+                                }}>
+                                    <div className="fields">
+                                        <div className="field" style={{
+                                            width: '100%'
+                                        }}>
+                                            <div className="label">Destino</div>
+                                            <div className="field_wrap calendar_field select_field">
+                                                <select name="tour-activity" onChange={(e) => setFiltroDestino(e.target.value)}>
+                                                    <option value="">Seleccione...</option>
+                                                    {
+                                                        destinos.length > 0 && destinos.map(dest => (
+                                                            <option value={dest.id} key={dest.id}>{dest.pais}</option>
+                                                        ))
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="page_content two-columns" style={{
+                padding: '10px'
+            }}>
+                <div className="wrap">
+                    <div className="wrap_float">
+                        <div className="section-title" style={{
+                            margin: '0'
+                        }}>Tours</div>
                         <div className="main">
                             <div className="most_popular__section">
                                 {
-                                    tours.map(tour =>
+                                    tours.filter(tour => filtroDestino == '' ? tour : tour.id_destino == filtroDestino).map(tour =>
                                         <a className="slider_item"
                                            style={{
                                                background: `url(${tour.img_fondo})`
